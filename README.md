@@ -130,13 +130,13 @@ After running the Beats playbooks Navigate to the URL (public IP of the elk:5601
 
 ## CMD's used to run the playbooks:
 
-eval "$(ssh-agent -s)"
-ssh-add
-ansible -m ping all
-ansible-playbook dvwa-playbook.yml
-ansible-playbook elk-playbook.yml
-ansible-playbook filebeat-playbook.yml
-ansible-playbook metricbeat-playbook.yml
+- eval "$(ssh-agent -s)"
+- ssh-add                                                   
+- ansible -m ping all                                                                              
+- ansible-playbook dvwa-playbook.yml                                                                      
+- ansible-playbook elk-playbook.yml                                                                     
+- ansible-playbook filebeat-playbook.yml                                                                     
+- ansible-playbook metricbeat-playbook.yml                                                                   
 
 ## files 
 
