@@ -1,0 +1,86 @@
+1. Create resource group on Azure.
+2. Create Virtual Network on Azure and set West-US region and choose the created resource group. 
+3. Create Network security groupe. 
+
+ ## create inbound rules for ssh and HTTP (from local workstation to jumb-box and from jumb-box to the entire virtual network)
+ 
+ ## on your terminal run the cmd ## ssh-kegen and copy the public key 
+ ## find the location of pub key in the path ~/.ssh/id_rsa.pub
+
+3. Create your Jump-Box-Provesioner VM on Azure with public IP and set it to the same created resource group and same region. Past the pub key in the ssh key and specify the username of ssh and refer to the same network security group.
+ ## in the security group create inbound rule to access the jump-box from your local work station.
+ ## ssh to the jump-box and run the cmd's
+ ## sudo apt-get update
+ ## sudo apt install docker.io
+ ## sudo docker pull cyberxsecurity/ubuntu:bionic
+ ## sudo docker run -it cyberxsecurity/ansible /bin/bash to install 
+ ## to list the containers do:  sudo docker container list -a
+ ## choose the right container
+ ## run sudo docker start [container_name]
+ ## run sudo docker attach [container_name]
+ ## run the cmd ## ssh-kegen and copy the public key 
+ ## find the location of pub key in the path ~/.ssh/id_rsa.pub
+
+4. Create on Azure DVWA-VM1, DVWA-VN2, DVWA-VM3 and DVWA-VM4 without public IP and set the same resource group, region, Virtual network and Network security group that you created. And use the pub key which created on Ansible to set the ssh to your DVWA VM's.
+ ## create a security inbound rule to access the VM's from your jump-box 
+ ## ssh to the VM's to check the ssh connection and exit.
+ ## on ansible container navigate to /etc/ansible and cat the hosts and uncomment the webservers ans add the private ip's of your VM's and save it.
+ ## navigate to /etc/ansible and cat the ansible.cfg, change the remote_user to your ssh user that created with the VM's
+ ## build your DVWA yaml playbook file to be as below :
+
+https://github.com/erfanwhb/ELKserver-Project/blob/master/Resources/dvwa-playbook.yml
+ 
+## run the cmd # eval "$(ssh-agent -s)"       and then # ssh-add
+ ## run the playbook #ansible-playbook dvwa-playbook.yml
+ 
+5. Create new machine to be the ELK server and name it elk using the same resourcegroup and network with public IP same security group and put the ssh public key which created inside ansible container and ssh to it to check the connection.
+ ## create inbound rule to be able to access from internet to the elk 
+ ## ssh to the new elk machine to check the connection and exit
+ ## build the elk playbook to be as below:
+https://github.com/erfanwhb/ELKserver-Project/blob/master/Resources/elk-playbook.yml
+ ## run the elk playbook by running the cmd # ansible-playbook elk-playbook.yml
+ ## ssh to elk and run #sudo docker ps if the container not started then run # sudo docker start elk
+ ## Navigate in your browser the URL  elk-public-IP:5601 if you see the kibana webpage you are doing good job.
+
+6. Build the filebeat configuration file and put it in new directory under the ansible such as /etc/ansible/files and then build the filebeat playbook and put in under /etc/ansible/roles.
+ ## the filebeat configuration file needs some changes as below:
+
+hosts: ["10.0.0.6:9200"]   # change the IP to your elk private IP
+  username: "elastic"
+  password: "changeme" # TODO: Change this to the password you set
+
+
+AND 
+
+setup.kibana:
+  host: "10.0.0.6:5601" # TODO: Change this to the IP address of your ELK server
+ ## the filebeat configuration file most be as below:
+
+https://github.com/erfanwhb/ELKserver-Project/blob/master/Resources/filebeat-configuration.yml
+
+ ## Now build the filebeat playbook file and put it in the path /etc/ansible/roles/ you me need to change src file path according to playbook location to be as below:
+
+https://github.com/erfanwhb/ELKserver-Project/blob/master/Resources/filebeat-playbook.yml
+
+ ## run the playbook # ansible-playbook filebeat-playbook.yml
+ ## Navigate to kibana webpage and check syslog data there.
+7. Build the metricbeat configuration file and same put it under files directory and metricbeat playbook yaml file and put it under /etc/ansible/roles/ and most be as below:
+
+https://github.com/erfanwhb/ELKserver-Project/blob/master/Resources/metricbeat-configuration.yml
+ ## Don't forget to change the below setting in the metricbeat configuration file as below:
+
+setup.kibana:
+  host: "10.0.0.6:5601"
+
+AND
+
+hosts: ["10.0.0.6:9200"]
+  username: "elastic"
+  password: "changeme"
+
+https://github.com/erfanwhb/ELKserver-Project/blob/master/Resources/metricbeat-playbook.yml
+
+ ## run the metricbeat playbook as ansible-playbook metricbeat-playbook.yml
+ ## Navigate to Kibana webpage then metric data => Docker ==> check the data there.
+
+====================================== END ===============================================
