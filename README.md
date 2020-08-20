@@ -1,4 +1,4 @@
-Using Ansible docker to automate configuration of the ELK machine, DVWA’s configurations and moving files from one control machine Jump Box Provisioner using Azure cloud.
+## ELK server project: Using Ansible docker to automate configuration of the ELK machine, DVWA’s configurations and moving files from one control machine Jump Box Provisioner using Azure cloud.
 
 ## Automated ELK Stack Deployment
 
